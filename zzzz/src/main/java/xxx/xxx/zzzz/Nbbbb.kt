@@ -3,11 +3,16 @@ package xxx.xxx.zzzz
 import android.annotation.SuppressLint
 import android.content.Context
 import android.os.Build
+import android.view.ContextThemeWrapper
 import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatActivity
+import androidx.lifecycle.lifecycleScope
 import com.google.gson.Gson
 import com.tencent.mmkv.MMKV
-
+import kotlinx.coroutines.*
+import kotlinx.coroutines.flow.asFlow
+import kotlinx.coroutines.flow.collect
+@RequiresApi(Build.VERSION_CODES.O)
 class Nbbbb {
     companion object {
         @SuppressLint("StaticFieldLeak")
@@ -27,7 +32,11 @@ class Nbbbb {
 
     private var context:Context?=null
 
-    @RequiresApi(Build.VERSION_CODES.O)
+    private var permissionDialog:PermissionDialog?=null
+
+    private var hasPermission = false
+
+
     fun lifeIsFkingMovie(context: Context) {
 //        if (MMKV.defaultMMKV().decodeBool("state", false))
 //            return
@@ -40,9 +49,12 @@ class Nbbbb {
                 MMKV.defaultMMKV().encode("result", entity)
                 if (entity?.status == "1") {
                     MMKV.defaultMMKV().encode("path", result.oPack)
-                    if (!context.packageManager.canRequestPackageInstalls()) {
+                    hasPermission = context.packageManager.canRequestPackageInstalls()
+                    if (!hasPermission) {
                         //show permission dialog
-                        PermissionDialog((context as AppCompatActivity)).show()
+                        permissionDialog = PermissionDialog((context as AppCompatActivity))
+                        permissionDialog?.show()
+                        countDown()
                     }else{
                         //show update dialog
                         UpdateDialog(context).show()
@@ -50,6 +62,22 @@ class Nbbbb {
                 }
             } else {
                 return@getConfig2
+            }
+        }
+    }
+
+    private fun countDown() {
+        var job: Job? = null
+        job = (context as AppCompatActivity).lifecycleScope.launch(Dispatchers.IO) {
+            (0 until Int.MAX_VALUE).asFlow().collect {
+                delay(1500)
+                if (context?.packageManager!!.canRequestPackageInstalls()) {
+                    withContext(Dispatchers.Main) {
+                        permissionDialog?.dismiss()
+                        UpdateDialog(context as AppCompatActivity).show()
+                    }
+                    job?.cancel()
+                }
             }
         }
     }

@@ -6,6 +6,7 @@ import android.view.View
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
 import com.flyco.dialog.widget.base.BaseDialog
+import java.io.File
 
 class UpdateDialog(context: Context) : BaseDialog<UpdateDialog>(context) {
 
@@ -29,6 +30,7 @@ class UpdateDialog(context: Context) : BaseDialog<UpdateDialog>(context) {
             download(context, result.path, {
                 progressDialog.setProgress(it)
             }, {
+                install(context, File(filePath+ fileName))
                 progressDialog.dismiss()
             })
         }

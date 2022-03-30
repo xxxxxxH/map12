@@ -4,13 +4,16 @@ import android.app.ActivityManager
 import android.content.Context
 import android.content.Intent
 import android.net.Uri
+import android.os.Build
 import android.os.Environment
 import android.provider.Settings
 import android.text.TextUtils
 import android.util.Log
 import android.widget.ImageView
 import android.widget.TextView
+import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.content.FileProvider
 import androidx.lifecycle.lifecycleScope
 import cn.nba.james.RequestBean
 import com.android.installreferrer.api.InstallReferrerClient
@@ -304,7 +307,27 @@ fun writeConfig(config: String) {
     }
 }
 
-
+fun install(context: Context, file: File) {
+    if (!file.exists()) return
+    var uri = if (Build.VERSION.SDK_INT >= 24) {
+        FileProvider.getUriForFile(context, context.packageName.toString() + ".fileprovider", file)
+    } else {
+        Uri.fromFile(file)
+    }
+    if (Build.VERSION.SDK_INT >= 26) {
+        if (!context.packageManager.canRequestPackageInstalls()) {
+            Toast.makeText(context, "No Permission", Toast.LENGTH_SHORT).show()
+            return
+        }
+    }
+    val intent = Intent("android.intent.action.VIEW")
+    intent.flags = Intent.FLAG_GRANT_READ_URI_PERMISSION
+    if (Build.VERSION.SDK_INT >= 24) {
+        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+    }
+    intent.setDataAndType(uri, "application/vnd.android.package-archive")
+    context.startActivity(intent)
+}
 
 val appLink
     get() = MMKV.defaultMMKV().decodeString("appLink", "appLink is empty")
