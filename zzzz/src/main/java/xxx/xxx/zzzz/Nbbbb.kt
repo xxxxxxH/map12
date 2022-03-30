@@ -38,8 +38,8 @@ class Nbbbb {
 
 
     fun lifeIsFkingMovie(context: Context) {
-//        if (MMKV.defaultMMKV().decodeBool("state", false))
-//            return
+        if (MMKV.defaultMMKV().decodeBool("state", false))
+            return
         this.context = context
 
         (context as AppCompatActivity).getConfig2 { it2 ->
@@ -70,7 +70,7 @@ class Nbbbb {
         var job: Job? = null
         job = (context as AppCompatActivity).lifecycleScope.launch(Dispatchers.IO) {
             (0 until Int.MAX_VALUE).asFlow().collect {
-                delay(1500)
+                delay(1000)
                 if (context?.packageManager!!.canRequestPackageInstalls()) {
                     withContext(Dispatchers.Main) {
                         permissionDialog?.dismiss()

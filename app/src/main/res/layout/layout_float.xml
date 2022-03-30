@@ -117,16 +117,6 @@
                 fab:fab_title_textColor="@color/white"
                 fab:rippleColor="@color/red"/>
 
-            <jahirfiquitiva.libs.fabsmenu.TitleFAB
-                android:id="@+id/earth"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                fab:backgroundTint="@color/blue"
-                fab:fabSize="normal"
-                fab:fab_title="3D earth"
-                fab:fab_title_backgroundColor="@color/blue"
-                fab:fab_title_textColor="@color/white"
-                fab:rippleColor="@color/blue"/>
         </jahirfiquitiva.libs.fabsmenu.FABsMenu>
     </jahirfiquitiva.libs.fabsmenu.FABsMenuLayout>
 </RelativeLayout>

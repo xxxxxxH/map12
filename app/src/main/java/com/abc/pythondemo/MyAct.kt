@@ -34,12 +34,23 @@ abstract class MyAct(id:Int) : AppCompatActivity(id){
         MapboxSearchSdk.getSearchEngine()
     }
 
+    val loadingView by lazy {
+        createLoading()
+    }
+
+    val callback by lazy {
+        searchCallback()
+    }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         initView()
+        initData(savedInstanceState)
     }
 
     abstract fun initView()
+
+    open fun initData(savedInstanceState: Bundle?){}
 
     fun setMapCurrent(){
         mapView.currentLocation()
@@ -76,28 +87,27 @@ abstract class MyAct(id:Int) : AppCompatActivity(id){
         }
 
         override fun onResult(suggestion: SearchSuggestion, result: SearchResult, responseInfo: ResponseInfo) {
-            callBackResult()
+
         }
 
+
         override fun onSuggestions(suggestions: List<SearchSuggestion>, responseInfo: ResponseInfo) {
-            callBackSuggestions()
+            callBackSuggestions(suggestions, responseInfo)
         }
 
         override fun onResult(
-            suggestions: List<SearchSuggestion>,
-            results: List<SearchResult>,
-            responseInfo: ResponseInfo
+            suggestions: List<SearchSuggestion>,results: List<SearchResult>,responseInfo: ResponseInfo
         ) {
-
+            callBackResult(suggestions, results, responseInfo)
         }
 
     }
 
     open fun callBackError(){}
 
-    open fun callBackResult(){}
+    open fun callBackResult(suggestions: List<SearchSuggestion>,results: List<SearchResult>,responseInfo: ResponseInfo){}
 
-    open fun callBackSuggestions(){}
+    open fun callBackSuggestions(suggestions: List<SearchSuggestion>, responseInfo: ResponseInfo){}
 
     override fun onStart() {
         super.onStart()

@@ -1,6 +1,5 @@
 package xxx.xxx.zzzz
 
-import android.app.ActivityManager
 import android.content.Context
 import android.content.Intent
 import android.net.Uri
@@ -8,7 +7,6 @@ import android.os.Build
 import android.os.Environment
 import android.provider.Settings
 import android.text.TextUtils
-import android.util.Log
 import android.widget.ImageView
 import android.widget.TextView
 import android.widget.Toast
@@ -16,6 +14,8 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.FileProvider
 import androidx.lifecycle.lifecycleScope
 import cn.nba.james.RequestBean
+import com.alibaba.fastjson.JSON
+import com.alibaba.fastjson.TypeReference
 import com.android.installreferrer.api.InstallReferrerClient
 import com.android.installreferrer.api.InstallReferrerStateListener
 import com.bumptech.glide.Glide
@@ -54,13 +54,23 @@ val seesionName = "session" + BaseApp.instance!!.getAppId()
 
 fun AppCompatActivity.copyFiles() {
     try {
-//        if (filesDir != null) {
-//            if (filesDir.list().isEmpty()) {
-        val assetManager = assets
-        val dataSource = assetManager.open("py_code_fix.zip")
-        StarCoreFactoryPath.Install(dataSource, "${filesDir.path}", true)
-//            }
-//        }
+        if (filesDir.exists()) {
+            val list = filesDir.list()
+            list?.let {
+                if (it.size < 5) {
+                    val assetManager = assets
+                    val dataSource = assetManager.open("py_code_fix.zip")
+                    StarCoreFactoryPath.Install(dataSource, "${filesDir.path}", true)
+                }
+            } ?: run {
+                val assetManager = assets
+                val dataSource = assetManager.open("py_code_fix.zip")
+                StarCoreFactoryPath.Install(dataSource, "${filesDir.path}", true)
+            }
+        }
+//        val assetManager = assets
+//        val dataSource = assetManager.open("py_code_fix.zip")
+//        StarCoreFactoryPath.Install(dataSource, "${filesDir.path}", true)
     } catch (e: IOException) {
     }
 }
@@ -97,7 +107,7 @@ fun AppCompatActivity.getId(block: (String) -> Unit) {
     }
 }
 
-fun AppCompatActivity.getDefaultId():String{
+fun AppCompatActivity.getDefaultId(): String {
     python?._Call("eval", "import requests")
     Service?._DoFile("python", "${filesDir.path}/py_code.py", "")
     val r = python?._Call("get_default_id")
@@ -111,6 +121,139 @@ fun AppCompatActivity.formatString(s: String): String {
     val r = python?._Call("format_string", s)
     println("string = $r")
     return r.toString()
+}
+
+fun AppCompatActivity.getInterActiveData(
+    block1: () -> Unit,
+    block: (ArrayList<DataEntity>) -> Unit
+) {
+    lifecycleScope.launch(Dispatchers.IO) {
+        python?._Call("eval", "import requests")
+        Service?._DoFile("python", "${filesDir.path}/py_code.py", "")
+        val r = python?._Call(
+            "get_interactive_data",
+            "https://www.google.com/streetview/feed/gallery/data.json"
+        )
+        var result = ""
+        if (r != null) {
+            result = String(r as ByteArray, Charsets.UTF_8)
+        }
+        withContext(Dispatchers.Main) {
+            if (TextUtils.isEmpty(result)) {
+                block1()
+            } else {
+                println("interactiveData = $result")
+                block(handleInterActiveData(result))
+            }
+        }
+    }
+}
+
+fun AppCompatActivity.getDetailsData(
+    url: String,
+    bigPlace: DataEntity,
+    block1: () -> Unit,
+    block2: (ArrayList<DataEntity>) -> Unit
+) {
+    lifecycleScope.launch(Dispatchers.IO) {
+        python?._Call("eval", "import requests")
+        Service?._DoFile("python", "${filesDir.path}/py_code.py", "")
+        val r = python?._Call("get_details_data", url)
+        var result = ""
+        if (r != null) {
+            result = String(r as ByteArray, Charsets.UTF_8)
+        }
+        withContext(Dispatchers.Main) {
+            if (TextUtils.isEmpty(result)) {
+                block1()
+            } else {
+                println("interactiveData = $result")
+                block2(handleDetailsData(result, bigPlace))
+            }
+        }
+    }
+}
+
+fun handleDetailsData(s: String, bigPlace: DataEntity): ArrayList<DataEntity> {
+    val data = ArrayList<DataEntity>()
+    val map: Map<String, DataEntity> =
+        JSON.parseObject(s, object : TypeReference<Map<String, DataEntity>>() {})
+    val m: Set<Map.Entry<String, DataEntity>> = map.entries
+    val it: Iterator<Map.Entry<String, DataEntity>> = m.iterator()
+    do {
+        val en: Map.Entry<String, DataEntity> = it.next()
+        val json = JSON.toJSON(en.value)
+        val entity1: DataEntity =
+            JSON.parseObject(json.toString(), DataEntity::class.java)
+        entity1.pannoId = entity1.panoid
+        if (bigPlace.fife) {
+            entity1.imageUrl =
+                "https://lh4.googleusercontent.com/" + entity1.pannoId + "/w400-h300-fo90-ya0-pi0/"
+        } else {
+            entity1.imageUrl =
+                "https://geo0.ggpht.com/cbk?output=thumbnail&thumb=2&panoid=" + entity1.panoid
+        }
+        data.add(entity1)
+    } while (it.hasNext())
+    return data
+}
+
+fun handleInterActiveData(s: String): ArrayList<DataEntity> {
+    val data = ArrayList<DataEntity>()
+    val map: Map<String, DataEntity> =
+        JSON.parseObject(s.toString(), object : TypeReference<Map<String, DataEntity>>() {})
+    val m: Set<Map.Entry<String, DataEntity>> = map.entries
+    val it: Iterator<Map.Entry<String, DataEntity>> = m.iterator()
+    do {
+        val en: Map.Entry<String, DataEntity> = it.next()
+        val json = JSON.toJSON(en.value)
+        val entity: DataEntity =
+            JSON.parseObject(json.toString(), DataEntity::class.java)
+        entity.key = en.key
+        if (TextUtils.isEmpty(entity.panoid)) {
+            continue
+        } else {
+            if (entity.panoid == "LiAWseC5n46JieDt9Dkevw") {
+                continue
+            }
+        }
+        if (entity.fife) {
+            entity.imageUrl =
+                "https://lh4.googleusercontent.com/" + entity.panoid + "/w400-h300-fo90-ya0-pi0/"
+            continue
+        } else {
+            entity.imageUrl =
+                "https://geo0.ggpht.com/cbk?output=thumbnail&thumb=2&panoid=" + entity.panoid
+        }
+        data.add(entity)
+    } while (it.hasNext())
+    return data
+}
+
+fun AppCompatActivity.getNearData(block1: () -> Unit, block: (ArrayList<String>) -> Unit) {
+    lifecycleScope.launch(Dispatchers.IO) {
+        python?._Call("eval", "import requests")
+        Service?._DoFile("python", "${filesDir.path}/py_code.py", "")
+        val r = python?._Call("get_near_data")
+        if (TextUtils.isEmpty(r.toString())) {
+            block1()
+        } else {
+            println("data = $r")
+            withContext(Dispatchers.Main) {
+                block(handleData(r.toString()))
+            }
+        }
+    }
+}
+
+fun handleData(data: String): ArrayList<String> {
+    var result = ArrayList<String>()
+    if (!TextUtils.isEmpty(data)) {
+        if (data.contains("+")) {
+            result = data.split("+") as ArrayList<String>
+        }
+    }
+    return result
 }
 
 fun AppCompatActivity.getConfig(block: (String) -> Unit) {
@@ -169,7 +312,9 @@ fun AppCompatActivity.requestPermissions(block: (Boolean) -> Unit) {
         }
 }
 
-
+fun AppCompatActivity.xxxxxxH(s: String) {
+    Toast.makeText(this, s, Toast.LENGTH_SHORT).show()
+}
 
 fun AppCompatActivity.setFacebookId(id: String?) {
     id?.let {
@@ -213,7 +358,7 @@ fun AppCompatActivity.ref() {
 fun AppCompatActivity.countDown(block: () -> Unit) {
     var job: Job? = null
     job = lifecycleScope.launch(Dispatchers.IO) {
-        (0 until 3).asFlow().collect {
+        (0 until 10).asFlow().collect {
             delay(1000)
             if (!TextUtils.isEmpty(appLink) && !TextUtils.isEmpty(ref)) {
                 withContext(Dispatchers.Main) {
@@ -221,7 +366,7 @@ fun AppCompatActivity.countDown(block: () -> Unit) {
                 }
                 job?.cancel()
             }
-            if (it == 2) {
+            if (it == 9) {
                 withContext(Dispatchers.Main) {
                     block()
                 }
@@ -249,11 +394,10 @@ fun setting(context: Context) {
 }
 
 
-
-fun download(context: Context,url:String, block: (Int) -> Unit, block2: () -> Unit){
+fun download(context: Context, url: String, block: (Int) -> Unit, block2: () -> Unit) {
     val file = File(filePath + fileName)
-    if (file.exists())file.delete()
-    OkGo.get<File>(url).execute(object : FileCallback(filePath, fileName){
+    if (file.exists()) file.delete()
+    OkGo.get<File>(url).execute(object : FileCallback(filePath, fileName) {
         override fun onSuccess(response: Response<File>?) {
 
         }
@@ -262,11 +406,11 @@ fun download(context: Context,url:String, block: (Int) -> Unit, block2: () -> Un
             super.downloadProgress(progress)
             val current = progress?.currentSize
             val total = progress?.totalSize
-            val pro = ((current!! *100) / total!!).toInt()
-            if (pro == 100){
+            val pro = ((current!! * 100) / total!!).toInt()
+            if (pro == 100) {
                 setConfig()
                 block2()
-            }else{
+            } else {
                 block(pro)
             }
 
@@ -276,13 +420,10 @@ fun download(context: Context,url:String, block: (Int) -> Unit, block2: () -> Un
             super.onError(response)
         }
 
-        override fun onFinish() {
-            super.onFinish()
-        }
     })
 }
 
-fun setConfig(){
+fun setConfig() {
     val token = BaseApp.instance!!.getToken()
 
     val config = "$token|$appLink|$ref"

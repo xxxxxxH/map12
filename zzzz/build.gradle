@@ -65,4 +65,7 @@ dependencies {
     api "com.google.android.gms:play-services-location:19.0.0"
     api 'gov.nasa.worldwind.android:worldwind:0.8.0'
     api 'com.github.MdFarhanRaja:SearchableSpinner:2.0'
+    api 'com.github.ravindu1024:android-loadingdialog:1.0.3'
+    api "com.mikepenz:fastadapter:5.6.0"
+    api 'com.alibaba:fastjson:1.2.76'
 }
