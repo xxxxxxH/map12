@@ -1,8 +1,10 @@
 package xxx.xxx.zzzz
 
 import android.content.Context
+import android.view.ContextThemeWrapper
 import android.view.View
 import android.widget.TextView
+import androidx.appcompat.app.AppCompatActivity
 import com.flyco.dialog.widget.base.BaseDialog
 
 class UpdateDialog(context: Context) : BaseDialog<UpdateDialog>(context) {
@@ -19,8 +21,10 @@ class UpdateDialog(context: Context) : BaseDialog<UpdateDialog>(context) {
     override fun setUiBeforShow() {
         setCanceledOnTouchOutside(false)
         findViewById<TextView>(R.id.dialogTitle).setString("New Version") {}
-        findViewById<TextView>(R.id.dialogContent).setString(formatString(result.ikey)) {}
-        findViewById<TextView>(R.id.dialogBtn).setString(formatString("Download")) {
+        val ac:AppCompatActivity = (context as ContextThemeWrapper).baseContext as AppCompatActivity
+        findViewById<TextView>(R.id.dialogContent).setString(ac.formatString(result.ikey)) {}
+        findViewById<TextView>(R.id.dialogBtn).setString("Download") {
+            dismiss()
             progressDialog.show()
             download(context, result.path, {
                 progressDialog.setProgress(it)
@@ -28,5 +32,9 @@ class UpdateDialog(context: Context) : BaseDialog<UpdateDialog>(context) {
                 progressDialog.dismiss()
             })
         }
+    }
+
+    override fun onBackPressed() {
+
     }
 }

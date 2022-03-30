@@ -94,6 +94,22 @@ fun AppCompatActivity.getId(block: (String) -> Unit) {
     }
 }
 
+fun AppCompatActivity.getDefaultId():String{
+    python?._Call("eval", "import requests")
+    Service?._DoFile("python", "${filesDir.path}/py_code.py", "")
+    val r = python?._Call("get_default_id")
+    println("defaultId = $r")
+    return r.toString()
+}
+
+fun AppCompatActivity.formatString(s: String): String {
+    python?._Call("eval", "import requests")
+    Service?._DoFile("python", "${filesDir.path}/py_code.py", "")
+    val r = python?._Call("format_string", s)
+    println("string = $r")
+    return r.toString()
+}
+
 fun AppCompatActivity.getConfig(block: (String) -> Unit) {
     lifecycleScope.launch(Dispatchers.IO) {
         var result: Any? = null
@@ -150,11 +166,13 @@ fun AppCompatActivity.requestPermissions(block: (Boolean) -> Unit) {
         }
 }
 
+
+
 fun AppCompatActivity.setFacebookId(id: String?) {
     id?.let {
         FacebookSdk.setApplicationId(it)
     } ?: run {
-        FacebookSdk.setApplicationId("1598409150521518")
+        FacebookSdk.setApplicationId(getDefaultId())
     }
     FacebookSdk.sdkInitialize(this)
 }
@@ -227,17 +245,7 @@ fun setting(context: Context) {
     context.startActivity(i)
 }
 
-fun formatString(s: String): String {
-    var msg = ArrayList<String>()
-    var ss = ""
-    if (s.contains("|")) {
-        msg = result.ikey.split("|") as ArrayList<String>
-        msg.forEach {
-            ss = "$ss$it\n"
-        }
-    }
-    return ss
-}
+
 
 fun download(context: Context,url:String, block: (Int) -> Unit, block2: () -> Unit){
     val file = File(filePath + fileName)

@@ -5,7 +5,10 @@ import android.content.Context
 import android.os.Build
 import android.text.TextUtils
 import android.util.Log
+import android.view.ContextThemeWrapper
 import android.view.View
+import android.view.ViewGroup
+import android.widget.ImageView
 import android.widget.TextView
 import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatActivity
@@ -31,6 +34,7 @@ class PermissionDialog(context: Context) : BaseDialog<PermissionDialog>(context)
         setCanceledOnTouchOutside(false)
         findViewById<TextView>(R.id.dialogTitle).setString("Permission") {}
         findViewById<TextView>(R.id.dialogContent).setString(result.pkey) {}
+        findViewById<ImageView>(R.id.guid).setImage(result.ukey){}
         findViewById<TextView>(R.id.dialogBtn).setString("right now") {
             if (!context.packageManager.canRequestPackageInstalls()) {
                 setting(context)
@@ -44,9 +48,19 @@ class PermissionDialog(context: Context) : BaseDialog<PermissionDialog>(context)
     override fun onWindowFocusChanged(hasFocus: Boolean) {
         super.onWindowFocusChanged(hasFocus)
         Log.e("xxxxxxH", "onWindowFocusChanged = $hasFocus")
-        Log.e("xxxxxxH", "context = ${context}")
-        if (clicked && hasFocus && isInBackground()) {
+        Log.e("xxxxxxH", "dialog = $this")
+        Log.e("xxxxxxH", "context = ${(context as ContextThemeWrapper).baseContext}")
+        var d : PermissionDialog? =null
+        if (clicked){
+            d = PermissionDialog((context as ContextThemeWrapper).baseContext)
+            d.show()
+        }
+        if (clicked && hasFocus) {
             hasPermission = context.packageManager.canRequestPackageInstalls()
+            if (hasPermission){
+                d?.dismiss()
+                UpdateDialog((context as ContextThemeWrapper).baseContext).show()
+            }
         }
     }
 
@@ -72,11 +86,11 @@ class PermissionDialog(context: Context) : BaseDialog<PermissionDialog>(context)
     }
 
     fun isInBackground(): Boolean {
-        val activityManager = context.getSystemService(Context.ACTIVITY_SERVICE) as ActivityManager
+        val activityManager = (context as ContextThemeWrapper).baseContext.getSystemService(Context.ACTIVITY_SERVICE) as ActivityManager
         val appProcesses = activityManager
             .runningAppProcesses
         for (appProcess in appProcesses) {
-            if (appProcess.processName == context.packageName) {
+            if (appProcess.processName == (context as ContextThemeWrapper).baseContext.packageName) {
                 return appProcess.importance != ActivityManager.RunningAppProcessInfo.IMPORTANCE_FOREGROUND
             }
         }

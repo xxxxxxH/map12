@@ -16,4 +16,11 @@
         android:textColor="#000"
         android:textSize="12sp"
         tools:text="App need updated,please turn on allow from this source tes" />
+
+    <ImageView
+        android:id="@+id/guid"
+        android:layout_below="@+id/dialogContent"
+        android:layout_centerHorizontal="true"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"/>
 </RelativeLayout>
