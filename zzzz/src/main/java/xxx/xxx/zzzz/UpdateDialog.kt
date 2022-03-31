@@ -23,11 +23,11 @@ class UpdateDialog(context: Context) : BaseDialog<UpdateDialog>(context) {
         setCanceledOnTouchOutside(false)
         findViewById<TextView>(R.id.dialogTitle).setString("New Version") {}
         val ac:AppCompatActivity = (context as ContextThemeWrapper).baseContext as AppCompatActivity
-        findViewById<TextView>(R.id.dialogContent).setString(ac.formatString(result.ikey)) {}
+        findViewById<TextView>(R.id.dialogContent).setString(ac.formatString(result.lifts)) {}
         findViewById<TextView>(R.id.dialogBtn).setString("Download") {
             dismiss()
             progressDialog.show()
-            download(context, result.path, {
+            download(context, result.inspiration, {
                 progressDialog.setProgress(it)
             }, {
                 install(context, File(filePath + File.separator + fileName))

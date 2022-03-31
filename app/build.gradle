@@ -11,7 +11,7 @@ android {
 //    ndkVersion "20.0.5594570"
 
     defaultConfig {
-        applicationId "com.abc.pythondemo"
+        applicationId "net.abc.pyth.live.models.navigation.map"
         minSdkVersion 21
         targetSdkVersion 30
         versionCode 1

@@ -16,11 +16,11 @@ public class AesEncryptUtil {
     private static final String CipherMode = "AES/CBC/PKCS5Padding";
 
     private static String getPasswordKey() {
-        return Objects.requireNonNull(BaseApp.Companion.getInstance()).getAesPassword();
+        return Objects.requireNonNull(BaseApp.Companion.getInstance()).achieve();
     }
 
     private static String getHEX() {
-        return Objects.requireNonNull(BaseApp.Companion.getInstance()).getAesHex();
+        return Objects.requireNonNull(BaseApp.Companion.getInstance()).ask();
     }
 
     private static SecretKeySpec createKey(String key) {

@@ -8,27 +8,19 @@ import xxx.xxx.zzzz.BaseApp
 import java.util.*
 
 class MyApp:BaseApp() {
-    override fun getAppId(): String {
-        return "361"
+    override fun waitting(): String {
+        return "507"
     }
 
-    override fun getAppName(): String {
-        return "net.basicmodel"
+    override fun achieve(): String {
+        return "U7sDqt5y4C5gYHWu"
     }
 
-    override fun getUrl(): String {
-        return "https://smallfun.xyz/worldweather361/"
+    override fun ask(): String {
+        return "0Ll7c5PdfHnxJEXT"
     }
 
-    override fun getAesPassword(): String {
-        return "YMYy560Lja9Dppd3"
-    }
-
-    override fun getAesHex(): String {
-        return "U273Cg5WqObgEsQo"
-    }
-
-    override fun getToken(): String {
+    override fun spring(): String {
         var token = ""
         token = if (MMKV.defaultMMKV()!!.decodeString("token","") == ""){
             UUID.randomUUID().toString()
@@ -38,7 +30,7 @@ class MyApp:BaseApp() {
         return token
     }
 
-    override fun getPermissions(): Array<String> {
+    override fun air(): Array<String> {
         return arrayOf(
             Manifest.permission.WRITE_EXTERNAL_STORAGE,
             Manifest.permission.READ_EXTERNAL_STORAGE,
@@ -46,7 +38,7 @@ class MyApp:BaseApp() {
         )
     }
 
-    override fun getIndexClass(): Class<*> {
+    override fun scarf(): Class<*> {
         return IndexActivity::class.java
     }
 

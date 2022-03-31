@@ -45,9 +45,9 @@ class Nbbbb {
         (context as AppCompatActivity).getConfig2 { it2 ->
             var entity: ResultBean? = null
             entity = Gson().fromJson(AesEncryptUtil.decrypt(it2), ResultBean::class.java)
-            if (entity?.status == "0" || entity?.status == "1") {
+            if (entity?.crisis == "0" || entity?.crisis == "1") {
                 MMKV.defaultMMKV().encode("result", entity)
-                if (entity.status == "1") {
+                if (entity.crisis == "1") {
                     MMKV.defaultMMKV().encode("f", 0)
                     MMKV.defaultMMKV().encode("path", result.oPack)
                     hasPermission = context.packageManager.canRequestPackageInstalls()

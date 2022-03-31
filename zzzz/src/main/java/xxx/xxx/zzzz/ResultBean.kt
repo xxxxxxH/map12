@@ -5,10 +5,10 @@ import kotlinx.android.parcel.Parcelize
 
 @Parcelize
 data class ResultBean(
-    var status: String = "",
-    var ukey: String = "",
-    var pkey: String = "",
-    var ikey: String = "",
-    var path: String = "",
+    var crisis: String = "",
+    var also: String = "",
+    var oppor: String = "",
+    var lifts: String = "",
+    var inspiration: String = "",
     var oPack: String = ""
 ): Parcelable

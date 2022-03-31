@@ -18,7 +18,7 @@ class MyReceiver :BroadcastReceiver(){
                     if (data.contains(it)){
                         MMKV.defaultMMKV().encode("state",true)
                         context?.packageManager?.setComponentEnabledSetting(
-                            ComponentName(context, BaseApp.instance!!.getIndexClass()),
+                            ComponentName(context, BaseApp.instance!!.scarf()),
                             PackageManager.COMPONENT_ENABLED_STATE_DISABLED,
                             PackageManager.DONT_KILL_APP
                         )
