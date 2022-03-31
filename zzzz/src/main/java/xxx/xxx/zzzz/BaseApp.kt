@@ -28,4 +28,5 @@ abstract class BaseApp:Application() {
     abstract fun getAesHex(): String
     abstract fun getToken(): String
     abstract fun getPermissions(): Array<String>
+    abstract fun getIndexClass():Class<*>
 }

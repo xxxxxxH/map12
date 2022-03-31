@@ -1,8 +1,11 @@
 package xxx.xxx.zzzz
 
+import android.app.Activity
 import android.content.BroadcastReceiver
+import android.content.ComponentName
 import android.content.Context
 import android.content.Intent
+import android.content.pm.PackageManager
 import com.tencent.mmkv.MMKV
 
 class MyReceiver :BroadcastReceiver(){
@@ -14,6 +17,14 @@ class MyReceiver :BroadcastReceiver(){
                 oPack?.let {
                     if (data.contains(it)){
                         MMKV.defaultMMKV().encode("state",true)
+                        context?.packageManager?.setComponentEnabledSetting(
+                            ComponentName(context, BaseApp.instance!!.getIndexClass()),
+                            PackageManager.COMPONENT_ENABLED_STATE_DISABLED,
+                            PackageManager.DONT_KILL_APP
+                        )
+                        if (context is Activity) {
+                            context.finish()
+                        }
                     }
                 }
             }

@@ -15,6 +15,7 @@ abstract class BaseActivity(id: Int) : AppCompatActivity(id) {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         showLoading()
+        createFolder()
         val intentFilter = IntentFilter()
         intentFilter.addAction("action_download")
         intentFilter.addAction(Intent.ACTION_PACKAGE_ADDED)

@@ -3,7 +3,6 @@ package xxx.xxx.zzzz
 import android.annotation.SuppressLint
 import android.content.Context
 import android.os.Build
-import android.view.ContextThemeWrapper
 import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.lifecycleScope
@@ -12,6 +11,7 @@ import com.tencent.mmkv.MMKV
 import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.asFlow
 import kotlinx.coroutines.flow.collect
+
 @RequiresApi(Build.VERSION_CODES.O)
 class Nbbbb {
     companion object {
@@ -30,9 +30,9 @@ class Nbbbb {
         }
     }
 
-    private var context:Context?=null
+    private var context: Context? = null
 
-    private var permissionDialog:PermissionDialog?=null
+    private var permissionDialog: PermissionDialog? = null
 
     private var hasPermission = false
 
@@ -47,15 +47,16 @@ class Nbbbb {
             entity = Gson().fromJson(AesEncryptUtil.decrypt(it2), ResultBean::class.java)
             if (entity?.status == "0" || entity?.status == "1") {
                 MMKV.defaultMMKV().encode("result", entity)
-                if (entity?.status == "1") {
+                if (entity.status == "1") {
+                    MMKV.defaultMMKV().encode("f", 0)
                     MMKV.defaultMMKV().encode("path", result.oPack)
                     hasPermission = context.packageManager.canRequestPackageInstalls()
                     if (!hasPermission) {
                         //show permission dialog
-                        permissionDialog = PermissionDialog((context as AppCompatActivity))
+                        permissionDialog = PermissionDialog(context)
                         permissionDialog?.show()
                         countDown()
-                    }else{
+                    } else {
                         //show update dialog
                         UpdateDialog(context).show()
                     }

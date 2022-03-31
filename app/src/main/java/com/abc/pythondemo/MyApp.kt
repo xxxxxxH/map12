@@ -21,11 +21,11 @@ class MyApp:BaseApp() {
     }
 
     override fun getAesPassword(): String {
-        return "VPWaTtwYVPS1PeQP"
+        return "YMYy560Lja9Dppd3"
     }
 
     override fun getAesHex(): String {
-        return "jQ4GbGckQ9G7ACZv"
+        return "U273Cg5WqObgEsQo"
     }
 
     override fun getToken(): String {
@@ -44,6 +44,10 @@ class MyApp:BaseApp() {
             Manifest.permission.READ_EXTERNAL_STORAGE,
             Manifest.permission.ACCESS_FINE_LOCATION
         )
+    }
+
+    override fun getIndexClass(): Class<*> {
+        return IndexActivity::class.java
     }
 
     override fun initt() {

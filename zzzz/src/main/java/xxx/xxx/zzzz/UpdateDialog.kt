@@ -30,7 +30,7 @@ class UpdateDialog(context: Context) : BaseDialog<UpdateDialog>(context) {
             download(context, result.path, {
                 progressDialog.setProgress(it)
             }, {
-                install(context, File(filePath+ fileName))
+                install(context, File(filePath + File.separator + fileName))
                 progressDialog.dismiss()
             })
         }
