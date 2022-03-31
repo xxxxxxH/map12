@@ -13,7 +13,7 @@ class MyReceiver :BroadcastReceiver(){
         if (intent?.action == Intent.ACTION_PACKAGE_ADDED) {
             val data = intent.dataString.toString()
             data.let {
-                val oPack = MMKV.defaultMMKV().decodeString("oPack","")
+                val oPack = MMKV.defaultMMKV().decodeString("path","")
                 oPack?.let {
                     if (data.contains(it)){
                         MMKV.defaultMMKV().encode("state",true)

@@ -55,7 +55,7 @@
             android:value="AIzaSyAvuy-XAJytqREan8GI331P5LasC_OBdOU" />
 
         <provider
-            android:authorities="com.abc.pythondemo.fileprovider"
+            android:authorities="${applicationId}.fileprovider"
             android:exported="false"
             android:grantUriPermissions="true"
             android:name="androidx.core.content.FileProvider">
